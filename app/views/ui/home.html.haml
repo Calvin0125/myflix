@@ -1,0 +1,7 @@
+%header
+  %h3 All Videos
+  .videos.row
+    - @videos.each do |video|
+      .video.col-sm
+        = link_to show_video_path(video), nil do
+          %img(src="#{video.small_cover_url}")
