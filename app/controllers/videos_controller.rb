@@ -1,6 +1,6 @@
 class VideosController < ApplicationController
   def index
-    @videos = Video.all
+    @categories = Category.all
     render 'ui/home'
   end
 
