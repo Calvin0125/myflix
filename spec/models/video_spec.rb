@@ -17,4 +17,14 @@ describe Video do
   it 'should belong to Sci-fi category' do
     expect(@star_wars.category).to eq(@sci_fi)
   end
+
+  it 'should not save without title' do
+    video = Video.new(description: 'test movie', category_id: Category.first.id)
+    expect(video.save).to eq(false)
+  end
+
+  it 'should not save without description' do
+    video = Video.new(title: 'test movie', category_id: Category.first.id)
+    expect(video.save).to eq(false)
+  end
 end
