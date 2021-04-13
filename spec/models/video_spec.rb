@@ -46,5 +46,10 @@ describe Video do
       fantasy_series = Video.search_by_title('his DARK matERials')
       expect(fantasy_series).to contain_exactly(@his_dark_materials)
     end
+
+    it "returns empty array when searching with empty string" do
+      result = Video.search_by_title('')
+      expect(result).to eq([])
+    end
   end
 end
