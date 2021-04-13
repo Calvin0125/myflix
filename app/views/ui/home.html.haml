@@ -3,7 +3,4 @@
     %article.video_category
       %h3= link_to "#{category.name}", show_category_path(category)
     .videos.row
-      - category.videos.each do |video|
-        .video.col-sm-2
-        = link_to show_video_path(video), nil do
-          %img(src="#{video.small_cover_url}")
+      = render 'shared/videos', videos: category.videos
