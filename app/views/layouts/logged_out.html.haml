@@ -1,0 +1,15 @@
+!!! 5
+%html(lang="en-US")
+  %head
+    %title MyFlix - a video on demand service
+    %meta(charset="UTF-8")
+    %meta(name="viewport" content="width=device-width, initial-scale=1.0")
+    = csrf_meta_tag
+    = stylesheet_link_tag "application"
+    = javascript_pack_tag "application"
+  %body
+    %section.content.clearfix
+      = render 'shared/messages'
+      = yield
+    %footer
+      &copy 2013 MyFLiX
