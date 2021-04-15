@@ -1,10 +1,12 @@
 Rails.application.routes.draw do
-  root to: 'videos#index'
+  root to: 'pages#front'
   get 'home', to: 'videos#index'
 
   get 'register', to: 'users#new'
   post 'register', to: 'users#create'
-  get 'signin', to: 'session#new'
+  get 'login', to: 'sessions#new'
+  post 'login', to: 'sessions#create'
+  post 'logout', to: 'sessions#destroy'
 
   get 'category/:id', to: 'categories#show', as: 'show_category'
 

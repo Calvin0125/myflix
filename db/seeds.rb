@@ -24,3 +24,4 @@ fantasy.videos << Video.create(title: "The Wizard of Oz", description: "Wizards 
 cartoons.videos << Video.create(title: "Futurama", description: "Futuristic cartoon", small_cover_url: "https://via.placeholder.com/200x300.png?text=Futurama", large_cover_url: "https://via.placeholder.com/500x350.png?text=Futurama")
 cartoons.videos << Video.create(title: "Rick And Morty", description: "Funny cartoon", small_cover_url: "https://via.placeholder.com/200x300.png?text=Rick+and+Morty", large_cover_url: "https://via.placeholder.com/500x350.png?text=Rick+and+Morty")
 cartoons.videos << Video.create(title: "Scooby Doo", description: "Mystery solving dog", small_cover_url: "https://via.placeholder.com/200x300.png?text=Scooby+Doo", large_cover_url: "https://via.placeholder.com/500x350.png?text=Scooby+Doo")
+
