@@ -17,27 +17,19 @@ describe Category do
 
     it "returns all videos if 6 or fewer in category" do
       videos = []
-      videos.unshift Video.create(title: 'Star Wars', description: 'space battles', category_id: Category.first.id)
-      videos.unshift Video.create(title: 'Star Trek', description: 'space voyages', category_id: Category.first.id)
-      videos.unshift Video.create(title: 'Rick and Morty', description: 'funny cartoon', category_id: Category.first.id)
-      videos.unshift Video.create(title: 'His Dark Materials', description: 'allegorical fantasy', category_id: Category.first.id)
+      4.times { videos.unshift(Fabricate(:video)) }
+      @favorites.videos << videos
       expect(@favorites.recent_videos).to eq(videos)
 
-      videos.unshift Video.create(title: 'Lord of the Rings', description: 'allegorical fantasy', category_id: Category.first.id)
-      videos.unshift Video.create(title: 'Scooby Doo', description: 'childrens cartoon', category_id: Category.first.id)
+      2.times { videos.unshift(Fabricate(:video)) }
+      @favorites.videos << videos
       expect(@favorites.recent_videos).to eq(videos)
     end
 
     it "returns 6 most recent videos if more than 6 in category" do
       videos = []
-      videos.unshift Video.create(title: 'Star Wars', description: 'space battles', category_id: Category.first.id)
-      videos.unshift Video.create(title: 'Star Trek', description: 'space voyages', category_id: Category.first.id)
-      videos.unshift Video.create(title: 'Rick and Morty', description: 'funny cartoon', category_id: Category.first.id)
-      videos.unshift Video.create(title: 'His Dark Materials', description: 'allegorical fantasy', category_id: Category.first.id)
-      videos.unshift Video.create(title: 'Lord of the Rings', description: 'allegorical fantasy', category_id: Category.first.id)
-      videos.unshift Video.create(title: 'Scooby Doo', description: 'childrens cartoon', category_id: Category.first.id)
-      videos.unshift Video.create(title: 'The Ring', description: 'horror movie about a ring', category_id: Category.first.id)
-      videos.unshift Video.create(title: 'Inception', description: 'movie about space', category_id: Category.first.id)
+      10.times { Fabricate(:video) }
+      @favorites.videos << videos
       expect(@favorites.recent_videos).to eq(videos.slice(0, 6))
     end
   end

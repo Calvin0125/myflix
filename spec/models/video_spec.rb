@@ -12,10 +12,10 @@ describe Video do
 
   describe '::search_by_title' do
     before :all do
-      @star_wars = Video.create(title: 'Star Wars', description: 'space battles')
-      @star_trek = Video.create(title: 'Star Trek', description: 'space voyages')
-      @rick_and_morty = Video.create(title: 'Rick and Morty', description: 'funny cartoon')
-      @his_dark_materials = Video.create(title: 'His Dark Materials', description: 'allegorical fantasy')
+      @star_wars = Fabricate(:video, title: "Star Wars")
+      @star_trek = Fabricate(:video, title: "Star Trek")
+      @rick_and_morty = Fabricate(:video, title: "Rick and Morty")
+      @his_dark_materials = Fabricate(:video, title: "His Dark Materials")
     end
 
     after :all do
