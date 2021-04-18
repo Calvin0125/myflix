@@ -1,7 +1,7 @@
 class SessionsController < ApplicationController
   def new
     if helpers.logged_in?
-      flash[:message] = "You are already logged in."
+      flash[:warning] = "You are already logged in."
       redirect_to home_path
     else
       render :login
@@ -15,7 +15,7 @@ class SessionsController < ApplicationController
       flash[:success] = "You have been logged in."
       redirect_to home_path
     else
-      flash[:danger] = "Invalid username or password"
+      flash[:danger] = "Invalid username or password."
       render :login
     end
   end
