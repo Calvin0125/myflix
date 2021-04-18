@@ -1,5 +1,5 @@
 class PagesController < ApplicationController
   def front
-    render 'ui/front'
+    render :front
   end
 end

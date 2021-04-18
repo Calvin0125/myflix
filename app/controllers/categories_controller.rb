@@ -3,6 +3,6 @@ class CategoriesController < ApplicationController
   
   def show
     @category = Category.find(params[:id])
-    render 'ui/genre'
+    render :category
   end
 end
