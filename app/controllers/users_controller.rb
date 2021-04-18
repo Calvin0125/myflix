@@ -7,7 +7,7 @@ class UsersController < ApplicationController
   def create
     @user = User.new(user_params)
     if @user.save
-      flash[:message] = "Your account has been created, please log in."
+      flash[:success] = "Your account has been created, please log in."
       redirect_to login_path
     else
       render :register
