@@ -53,4 +53,29 @@ describe Video do
       expect(result).to eq([])
     end
   end
+
+  describe "#average_rating" do
+    before(:each) do
+      @video = Fabricate(:video)
+    end
+
+    it "returns nil if there are no reviews" do
+      expect(@video.average_rating).to eq(nil)
+    end
+
+    it "returns rating if one review" do
+      @video.reviews << Fabricate(:review, rating: 4)
+      expect(@video.average_rating).to eq('4.0')
+    end
+
+    it "returns rating to one decimal place for whole numbers" do
+      3.times { @video.reviews << Fabricate(:review, rating: 4) }
+      expect(@video.average_rating).to eq('4.0')
+    end
+
+    it "rounds to one decimal place for decimal numbers" do
+      @video.reviews << [Fabricate(:review, rating: 2), Fabricate(:review, rating: 3), Fabricate(:review, rating: 3)]
+      expect(@video.average_rating).to eq('2.7')
+    end
+  end
 end
