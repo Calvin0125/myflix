@@ -7,6 +7,7 @@ Rails.application.routes.draw do
   get 'login', to: 'sessions#new'
   post 'login', to: 'sessions#create'
   post 'logout', to: 'sessions#destroy'
+  post 'reviews', to: 'reviews#create'
 
   get 'category/:id', to: 'categories#show', as: 'show_category'
 
