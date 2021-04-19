@@ -3,6 +3,7 @@ require 'rails_helper'
 describe Video do
   describe 'associations' do
     it { should belong_to(:category).optional }
+    it { should have_many(:reviews) }
   end
 
   describe 'validations' do
