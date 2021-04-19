@@ -10,4 +10,11 @@ describe Review do
     it { should validate_presence_of(:rating) }
     it { should validate_presence_of(:body) }
   end
+
+  describe "order" do
+    it "orders by created_at descending" do
+      5.times { Fabricate(:review) }
+      expect(Review.all).to eq(Review.all.order(created_at: :desc))
+    end
+  end
 end
