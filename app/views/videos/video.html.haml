@@ -36,7 +36,7 @@
           %input(type="submit" value="Submit" class="btn")
           %a(href="") Cancel
       %header
-        %h3 User Reviews (253)
+        %h3 User Reviews (#{@video.reviews.length})
       %ul
         - @video.reviews.each do |review|
           %article.review
