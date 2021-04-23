@@ -1,6 +1,7 @@
 class Video < ActiveRecord::Base
   belongs_to :category, optional: true
   has_many :reviews
+  has_many :queue_items
   validates_presence_of :title, :description
 
   def self.search_by_title(search_term)

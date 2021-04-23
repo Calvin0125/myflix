@@ -4,6 +4,7 @@ describe Video do
   describe 'associations' do
     it { should belong_to(:category).optional }
     it { should have_many(:reviews) }
+    it { should have_many(:queue_items) }
   end
 
   describe 'validations' do

@@ -7,6 +7,7 @@ describe User do
 
   describe "associations" do
     it { should have_many(:reviews) }
+    it { should have_many(:queue_items) }
   end
 
   describe "validations" do
