@@ -6,4 +6,10 @@ module ApplicationHelper
   def logged_in? 
     !!current_user
   end
+
+  def review_rating_options
+    (1..5).to_a.reverse.map do |n|
+      ["#{n} #{n > 1 ? 'stars' : 'star'}", n]
+    end
+  end
 end
