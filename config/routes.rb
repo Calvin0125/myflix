@@ -10,6 +10,7 @@ Rails.application.routes.draw do
   post 'reviews', to: 'reviews#create'
   get 'my_queue', to: 'queue_items#index'
   post 'queue_items', to: 'queue_items#create'
+  delete 'queue_items/:id', to: 'queue_items#destroy', as: 'queue_items_destroy'
 
   get 'category/:id', to: 'categories#show', as: 'show_category'
 

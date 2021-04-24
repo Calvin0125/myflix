@@ -31,6 +31,5 @@
                 %td
                   = link_to "#{item.video.category.name}", show_category_path(item.video.category)
                 %td
-                  = link_to "", method: :post do
-                    %i.glyphicon.glyphicon-remove
+                  = link_to "x", queue_items_destroy_path(item.id), method: :delete, class: "remove"
         = button_to "Update Instant Queue", nil, class: "btn btn-default"

@@ -82,4 +82,31 @@ describe QueueItemsController do
       end
     end
   end
+
+  describe "DELETE queue_items/:id" do
+    context "no user logged in" do
+      it "should redirect to root" do
+        delete :destroy, params: { id: 1 }
+        expect(response).to redirect_to root_path
+      end
+    end
+
+    context "user logged in" do
+      it "should delete the queue item" do
+        user = Fabricate(:user)
+        session[:user_id] = user.id
+        queue_item = Fabricate(:queue_item, user_id: user.id)
+        delete :destroy, params: { id: queue_item.id }
+        expect(user.queue_items.length).to eq(0)
+      end
+
+      it "should redirect to my_queue" do
+        user = Fabricate(:user)
+        session[:user_id] = user.id
+        queue_item = Fabricate(:queue_item, user_id: user.id)
+        delete :destroy, params: { id: queue_item.id }
+        expect(response).to redirect_to my_queue_path
+      end
+    end
+  end
 end

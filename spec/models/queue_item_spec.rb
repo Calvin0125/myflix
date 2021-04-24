@@ -23,4 +23,19 @@ describe QueueItem do
       expect(QueueItem.next_position(user)).to eq(1)
     end
   end
+
+  describe "::delete_and_update_positions" do
+    it "should remove queue item with specified id, and update positions for that user" do
+      user = Fabricate(:user)
+      queue_items = []
+      3.times do |n|
+        queue_items << Fabricate(:queue_item, position: n + 1, user_id: user.id, video_id: n)
+      end
+      queue_item1, queue_item2, queue_item3 = queue_items
+      id_to_delete = queue_item2.id
+      QueueItem.delete_and_update_positions(id_to_delete)
+      expect(user.queue_items).to eq([queue_item1, queue_item3])
+      expect(user.queue_items.last.position).to eq(2)
+    end
+  end
 end
