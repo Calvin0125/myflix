@@ -9,6 +9,7 @@ Rails.application.routes.draw do
   post 'logout', to: 'sessions#destroy'
   post 'reviews', to: 'reviews#create'
   get 'my_queue', to: 'queue_items#index'
+  post 'queue_items', to: 'queue_items#create'
 
   get 'category/:id', to: 'categories#show', as: 'show_category'
 

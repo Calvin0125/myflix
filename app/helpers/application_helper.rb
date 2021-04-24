@@ -12,4 +12,8 @@ module ApplicationHelper
       ["#{n} #{n > 1 ? 'stars' : 'star'}", n]
     end
   end
+
+  def queue_item_params(user, video)
+    { queue_item: { position: QueueItem.next_position(user), user_id: user.id, video_id: video.id } }
+  end
 end
