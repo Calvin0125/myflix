@@ -4,4 +4,5 @@ class Review < ActiveRecord::Base
   belongs_to :video, optional: true
 
   validates_presence_of :rating, :body
+  validates_uniqueness_of :video_id, scope: :user_id
 end

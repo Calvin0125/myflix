@@ -70,12 +70,12 @@ describe Video do
     end
 
     it "returns rating to one decimal place for whole numbers" do
-      3.times { @video.reviews << Fabricate(:review, rating: 4) }
+      3.times { |n| @video.reviews << Fabricate(:review, rating: 4, user_id: n) }
       expect(@video.average_rating).to eq('4.0')
     end
 
     it "rounds to one decimal place for decimal numbers" do
-      @video.reviews << [Fabricate(:review, rating: 2), Fabricate(:review, rating: 3), Fabricate(:review, rating: 3)]
+      @video.reviews << [Fabricate(:review, rating: 2, user_id: 1), Fabricate(:review, rating: 3, user_id: 2), Fabricate(:review, rating: 3, user_id: 3)]
       expect(@video.average_rating).to eq('2.7')
     end
   end
