@@ -10,12 +10,13 @@ class QueueItem < ActiveRecord::Base
     last_queue_item.nil? ? 1 : last_queue_item.position + 1
   end
 
-  def self.delete_and_update_positions(id)
+  def self.delete_and_update_positions(id, current_user)
     item_to_delete = QueueItem.find(id)
     missing_position = item_to_delete.position
-    user = item_to_delete.user
-    QueueItem.destroy(item_to_delete.id)
-    update_positions(user.id, missing_position)
+    if item_to_delete.user == current_user
+      QueueItem.destroy(item_to_delete.id)
+      update_positions(current_user.id, missing_position)
+    end
   end
 
   private

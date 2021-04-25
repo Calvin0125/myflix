@@ -16,7 +16,7 @@ class QueueItemsController < ApplicationController
   end
 
   def destroy
-    QueueItem.delete_and_update_positions(params[:id])
+    QueueItem.delete_and_update_positions(params[:id], helpers.current_user)
     redirect_to my_queue_path
   end
   private
