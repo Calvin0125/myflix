@@ -15,6 +15,10 @@ class QueueItemsController < ApplicationController
     redirect_to video_path(params[:queue_item][:video_id])
   end
 
+  def update
+    binding.pry
+  end
+
   def destroy
     QueueItem.delete_and_update_positions(params[:id], helpers.current_user)
     redirect_to my_queue_path

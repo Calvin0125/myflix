@@ -15,13 +15,37 @@ class QueueItem < ActiveRecord::Base
     missing_position = item_to_delete.position
     if item_to_delete.user == current_user
       QueueItem.destroy(item_to_delete.id)
-      update_positions(current_user.id, missing_position)
+      update_positions_after_deletion(current_user.id, missing_position)
     end
   end
 
+  def self.reorder_positions(user, positions_hash)
+    positions_hash.delete_if { |current_position, new_position| current_position == new_position }
+    locked_positions = []
+    positions_hash.each do |current_position, new_position|
+      update_position(current_position, new_position, locked_positions, user)
+      locked_positions << new_position
+    end
+    user.queue_items.save
+  end
   private
 
-  def self.update_positions(user_id, missing_position)
+  def self.update_position(current_position, new_position, locked_positions, user)
+    if current_position > new_position
+      user.queue_items.where("position < #{current_position} AND position >= #{new_position}").each do |item|
+        item.position += 1 if !locked_positions.include?(item.position)
+        locked_positions << item.position.to_i
+      end
+    elsif current_position < new_position
+      user.queue_items.where("position > #{current_position} AND position <= #{new_position}").each do |item|
+        item.position -= 1 if !locked_positions.include?(item.position)
+        locked_positions << item.position.to_i
+      end
+    end
+    user.queue_items.where(position: current_position).first.position = new_position
+  end
+
+  def self.update_positions_after_deletion(user_id, missing_position)
     items_to_update = QueueItem.where("user_id = '#{user_id}' AND position > '#{missing_position}'")
     items_to_update.each do |item|
       item.position -= 1
