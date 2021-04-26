@@ -19,19 +19,38 @@ class QueueItem < ActiveRecord::Base
   end
 
   def self.reorder_positions(user, positions_hash)
-    positions_hash.delete_if { |current_position, new_position| current_position == new_position }
-    raise StandardError.new if positions_hash.values.uniq != positions_hash.values
+    remove_positions_with_no_change(positions_hash)
+    raise StandardError.new if multiple_positions_changed_to_same_value?(positions_hash)
     locked_positions = []
     QueueItem.transaction do
       positions_hash.each do |current_position, new_position|
-        new_position = new_position.to_i > user.queue_items.count ? user.queue_items.count.to_s : new_position
-        update_position(current_position, new_position, locked_positions, user) if !locked_positions.include?(current_position.to_i)
-        locked_positions << new_position.to_i
+        new_position = ensure_new_position_is_in_range(new_position)
+        # check to see if this queue item has already changed position
+        if !locked_positions.include?(current_position.to_i)
+          update_position(current_position, new_position, locked_positions, user)
+          locked_positions << new_position.to_i
+        end
       end
     end
   end
 
   private
+
+  def self.ensure_new_position_is_in_range(new_position, user)
+    if new_position.to_i > user.queue_items.count
+      user.queue_items.count.to_s
+    elsif new_position.to_i < 1
+      1
+    end
+  end
+
+  def self.remove_positions_with_no_change(positions_hash)
+    positions_hash.delete_if { |current_position, new_position| current_position == new_position }
+  end
+
+  def self.multiple_positions_changed_to_same_value?(positions_hash)
+    positions_hash.values.uniq != positions_hash.values
+  end
 
   def self.update_position(current_position, new_position, locked_positions, user)
     user.queue_items.where(position: current_position).update(position: 5000)
