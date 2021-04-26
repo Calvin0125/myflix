@@ -6,8 +6,7 @@ class QueueItem < ActiveRecord::Base
   validates_uniqueness_of :position, scope: :user_id
 
   def self.next_position(user)
-    last_queue_item = user.queue_items.order(position: :desc).limit(1).first
-    last_queue_item.nil? ? 1 : last_queue_item.position + 1
+    user.queue_items.count + 1
   end
 
   def self.delete_and_update_positions(id, current_user)
@@ -21,28 +20,44 @@ class QueueItem < ActiveRecord::Base
 
   def self.reorder_positions(user, positions_hash)
     positions_hash.delete_if { |current_position, new_position| current_position == new_position }
+    raise StandardError.new if positions_hash.values.uniq != positions_hash.values
     locked_positions = []
-    positions_hash.each do |current_position, new_position|
-      update_position(current_position, new_position, locked_positions, user)
-      locked_positions << new_position
+    QueueItem.transaction do
+      positions_hash.each do |current_position, new_position|
+        new_position = new_position.to_i > user.queue_items.count ? user.queue_items.count.to_s : new_position
+        update_position(current_position, new_position, locked_positions, user) if !locked_positions.include?(current_position.to_i)
+        locked_positions << new_position.to_i
+      end
     end
-    user.queue_items.save
   end
+
   private
 
   def self.update_position(current_position, new_position, locked_positions, user)
+    user.queue_items.where(position: current_position).update(position: 5000)
     if current_position > new_position
-      user.queue_items.where("position < #{current_position} AND position >= #{new_position}").each do |item|
-        item.position += 1 if !locked_positions.include?(item.position)
-        locked_positions << item.position.to_i
+      user.queue_items.where("position < #{current_position} AND position >= #{new_position}")
+                      .order(position: :desc).each do |item|
+        if !locked_positions.include?(item.position)
+          loop do
+            item.position += 1
+            break if !locked_positions.include?(item.position)
+          end
+          item.save
+        end
       end
     elsif current_position < new_position
       user.queue_items.where("position > #{current_position} AND position <= #{new_position}").each do |item|
-        item.position -= 1 if !locked_positions.include?(item.position)
-        locked_positions << item.position.to_i
+        if !locked_positions.include?(item.position)
+          loop do
+            item.position -= 1
+            break if !locked_positions.include?(item.position)
+          end
+          item.save
+        end
       end
     end
-    user.queue_items.where(position: current_position).first.position = new_position
+    user.queue_items.where(position: 5000).update(position: new_position)
   end
 
   def self.update_positions_after_deletion(user_id, missing_position)
