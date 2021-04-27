@@ -70,52 +70,33 @@ describe QueueItem do
       expect(user.queue_items.where(position: 5)).to eq([old_items[5]])
     end
 
-    it "reorders correctly with 2 changes" do
-      user = Fabricate(:user)
-      old_items = {}
-      6.times { |n| old_items[n + 1] = Fabricate(:queue_item, position: n + 1, user_id: user.id, video_id: n + 1) }
-      # change position 2 => 1 and 4 => 6
-      positions_hash = { "1" => "1", "2" => "1", "3" => "3", "4" => "6", "5" => "5", "6" => "6"}
-      QueueItem.reorder_positions(user, positions_hash)
-      expect(user.queue_items.where(position: 1)).to eq([old_items[2]])
-      expect(user.queue_items.where(position: 2)).to eq([old_items[1]])
-      expect(user.queue_items.where(position: 3)).to eq([old_items[3]])
-      expect(user.queue_items.where(position: 4)).to eq([old_items[5]])
-      expect(user.queue_items.where(position: 5)).to eq([old_items[6]])
-      expect(user.queue_items.where(position: 6)).to eq([old_items[4]])
-    end
-
-    it "reorders correctly with 2 changed involving a 'lock'" do
-      user = Fabricate(:user)
-      old_items = {}
-      # change position 2 => 4 and 5 => 3
-      6.times { |n| old_items[n + 1] = Fabricate(:queue_item, position: n + 1, user_id: user.id, video_id: n + 1) }
-      positions_hash = { "1" => "1", "2" => "4", "3" => "3", "4" => "4", "5" => "3", "6" => "6"}
-      QueueItem.reorder_positions(user, positions_hash)
-      expect(user.queue_items.where(position: 1)).to eq([old_items[1]])
-      expect(user.queue_items.where(position: 2)).to eq([old_items[3]])
-      expect(user.queue_items.where(position: 3)).to eq([old_items[5]])
-      expect(user.queue_items.where(position: 4)).to eq([old_items[2]])
-      expect(user.queue_items.where(position: 5)).to eq([old_items[4]])
-      expect(user.queue_items.where(position: 6)).to eq([old_items[6]])
-    end
-
     it "reduces an arbitrarily high position to the last position in the queue" do
       user = Fabricate(:user)
       old_items = {}
       3.times { |n| old_items[n + 1] = Fabricate(:queue_item, position: n + 1, user_id: user.id, video_id: n + 1) }
-      positions_hash = { "1" => "1", "2" => "42", "3" => "2" }
+      positions_hash = { "1" => "1", "2" => "42", "3" => "3" }
       QueueItem.reorder_positions(user, positions_hash)
       expect(user.queue_items.where(position: 1)).to eq([old_items[1]])
       expect(user.queue_items.where(position: 2)).to eq([old_items[3]])
       expect(user.queue_items.where(position: 3)).to eq([old_items[2]])
     end
 
-    it "throws an error if the user sets 2 old positions to the same new position" do
+    it "increases an arbitrarily low position to 1" do
+      user = Fabricate(:user)
+      old_items = {}
+      3.times { |n| old_items[n + 1] = Fabricate(:queue_item, position: n + 1, user_id: user.id, video_id: n + 1) }
+      positions_hash = { "1" => "1", "2" => "2", "3" => "-42" }
+      QueueItem.reorder_positions(user, positions_hash)
+      expect(user.queue_items.where(position: 1)).to eq([old_items[3]])
+      expect(user.queue_items.where(position: 2)).to eq([old_items[1]])
+      expect(user.queue_items.where(position: 3)).to eq([old_items[2]])
+    end
+
+    it "throws an error if the user changes more than 1 position at a time" do
       user = Fabricate(:user)
       old_items = {}
       6.times { |n| old_items[n + 1] = Fabricate(:queue_item, position: n + 1, user_id: user.id, video_id: n + 1) }
-      positions_hash = { "1" => "1", "2" => "4", "3" => "3", "4" => "4", "5" => "4", "6" => "6"}
+      positions_hash = { "1" => "1", "2" => "4", "3" => "3", "4" => "4", "5" => "6", "6" => "6"}
       expect { QueueItem.reorder_positions(user, positions_hash) }.to raise_error(StandardError)
     end
   end

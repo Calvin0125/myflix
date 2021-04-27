@@ -20,18 +20,10 @@ class QueueItem < ActiveRecord::Base
 
   def self.reorder_positions(user, positions_hash)
     remove_positions_with_no_change(positions_hash)
-    raise StandardError.new if multiple_positions_changed_to_same_value?(positions_hash)
-    locked_positions = []
-    QueueItem.transaction do
-      positions_hash.each do |current_position, new_position|
-        new_position = ensure_new_position_is_in_range(new_position, user)
-        # check to see if this queue item has already changed position
-        if !locked_positions.include?(current_position.to_i)
-          update_position(current_position, new_position, locked_positions, user)
-          locked_positions << new_position.to_i
-        end
-      end
-    end
+    raise StandardError.new if user_attempts_multiple_position_changes(positions_hash)
+    current_position, new_position = positions_hash.keys[0], positions_hash.values[0]
+    new_position = ensure_new_position_is_in_range(new_position, user)
+    update_position(current_position, new_position, user)
   end
 
   private
@@ -50,42 +42,32 @@ class QueueItem < ActiveRecord::Base
     positions_hash.delete_if { |current_position, new_position| current_position == new_position }
   end
 
-  def self.multiple_positions_changed_to_same_value?(positions_hash)
-    positions_hash.values.uniq != positions_hash.values
+  def self.user_attempts_multiple_position_changes(positions_hash)
+    positions_hash.values.length > 1
   end
 
-  def self.update_position(current_position, new_position, locked_positions, user)
+  def self.update_position(current_position, new_position, user)
     user.queue_items.where(position: current_position).update(position: 5000)
     if current_position > new_position
-      move_intermediate_positions_up(user, current_position, new_position, locked_positions)
+      move_intermediate_positions_up(user, current_position, new_position)
     elsif current_position < new_position
-      move_intermediate_positions_down(user, current_position, new_position, locked_positions)
+      move_intermediate_positions_down(user, current_position, new_position)
     end
     user.queue_items.where(position: 5000).update(position: new_position)
   end
 
-  def self.move_intermediate_positions_up(user, current_position, new_position, locked_positions)
+  def self.move_intermediate_positions_up(user, current_position, new_position)
     user.queue_items.where("position < #{current_position} AND position >= #{new_position}")
                     .order(position: :desc).each do |item|
-      if !locked_positions.include?(item.position)
-        loop do
-          item.position += 1
-          break if !locked_positions.include?(item.position)
-        end
-        item.save
-      end
+      item.position += 1
+      item.save
     end
   end
 
-  def self.move_intermediate_positions_down(user, current_position, new_position, locked_positions)
+  def self.move_intermediate_positions_down(user, current_position, new_position)
     user.queue_items.where("position > #{current_position} AND position <= #{new_position}").each do |item|
-      if !locked_positions.include?(item.position)
-        loop do
-          item.position -= 1
-          break if !locked_positions.include?(item.position)
-        end
-        item.save
-      end
+      item.position -= 1
+      item.save
     end
   end
 

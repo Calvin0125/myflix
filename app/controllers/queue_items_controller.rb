@@ -16,7 +16,12 @@ class QueueItemsController < ApplicationController
   end
 
   def update
-    binding.pry
+    begin
+      QueueItem.reorder_positions(helpers.current_user, params[:positions])
+    rescue
+      flash[:warning] = "Your queue was not updated, please update only one item at a time."
+    end
+    redirect_to my_queue_path
   end
 
   def destroy
