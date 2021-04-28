@@ -4,6 +4,7 @@ class QueueItem < ActiveRecord::Base
 
   validates_uniqueness_of :video_id, scope: :user_id
   validates_uniqueness_of :position, scope: :user_id
+  validates_numericality_of :position, only_integer: true
 
   def self.next_position(user)
     user.queue_items.count + 1
@@ -23,7 +24,9 @@ class QueueItem < ActiveRecord::Base
     raise StandardError.new if user_attempts_multiple_position_changes(positions_hash)
     current_position, new_position = positions_hash.keys[0], positions_hash.values[0]
     new_position = ensure_new_position_is_in_range(new_position, user)
-    update_position(current_position, new_position, user)
+    QueueItem.transaction do
+      update_position(current_position, new_position, user)
+    end
   end
 
   private
@@ -47,27 +50,29 @@ class QueueItem < ActiveRecord::Base
   end
 
   def self.update_position(current_position, new_position, user)
-    user.queue_items.where(position: current_position).update(position: 5000)
+    item_to_update = user.queue_items.where(position: current_position).first
+    item_to_update.update(position: 5000)
     if current_position > new_position
       move_intermediate_positions_up(user, current_position, new_position)
     elsif current_position < new_position
       move_intermediate_positions_down(user, current_position, new_position)
     end
-    user.queue_items.where(position: 5000).update(position: new_position)
+    item_to_update.position = new_position
+    item_to_update.save!
   end
 
   def self.move_intermediate_positions_up(user, current_position, new_position)
     user.queue_items.where("position < #{current_position} AND position >= #{new_position}")
                     .order(position: :desc).each do |item|
       item.position += 1
-      item.save
+      item.save!
     end
   end
 
   def self.move_intermediate_positions_down(user, current_position, new_position)
     user.queue_items.where("position > #{current_position} AND position <= #{new_position}").each do |item|
       item.position -= 1
-      item.save
+      item.save!
     end
   end
 

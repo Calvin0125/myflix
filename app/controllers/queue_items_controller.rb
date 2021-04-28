@@ -18,8 +18,8 @@ class QueueItemsController < ApplicationController
   def update
     begin
       QueueItem.reorder_positions(helpers.current_user, params[:positions])
-    rescue
-      flash[:warning] = "Your queue was not updated, please update only one item at a time."
+    rescue StandardError
+      flash[:warning] = "Your queue was not updated, please update one item at a time with an integer."
     end
     redirect_to my_queue_path
   end

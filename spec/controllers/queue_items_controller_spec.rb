@@ -132,23 +132,32 @@ describe QueueItemsController do
     end
 
     context "invalid input" do
-      it "displays error" do
+      it "displays error if user tries to change more than one position" do
         user = Fabricate(:user)
         session[:user_id] = user.id
         queue_items = []
         3.times { |n| queue_items << Fabricate(:queue_item, position: n + 1, video_id: n + 1, user_id: user.id) }
         post :update, params: { positions: { "1": "3", "2": "3", "3": "3"} }
-        expect(flash[:warning]).to eq("Your queue was not updated, please update only one item at a time.")
+        expect(flash[:warning]).to eq("Your queue was not updated, please update one item at a time with an integer.")
       end
-    end
 
-    it "redirects to my_queue" do
-      user = Fabricate(:user)
-      session[:user_id] = user.id
-      queue_items = []
-      3.times { |n| queue_items << Fabricate(:queue_item, position: n + 1, video_id: n + 1, user_id: user.id) }
-      post :update, params: { positions: { "1": "3", "2": "3", "3": "3"} }
-      expect(response).to redirect_to my_queue_path
+      it "displays error if user enters something other than integer" do
+        user = Fabricate(:user)
+        session[:user_id] = user.id
+        queue_items = []
+        3.times { |n| queue_items << Fabricate(:queue_item, position: n + 1, video_id: n + 1, user_id: user.id) }
+        post :update, params: { positions: { "1": "1", "2": "3.5", "3": "3"} }
+        expect(flash[:warning]).to eq("Your queue was not updated, please update one item at a time with an integer.")
+      end
+
+      it "redirects to my_queue" do
+        user = Fabricate(:user)
+        session[:user_id] = user.id
+        queue_items = []
+        3.times { |n| queue_items << Fabricate(:queue_item, position: n + 1, video_id: n + 1, user_id: user.id) }
+        post :update, params: { positions: { "1": "3", "2": "3", "3": "3"} }
+        expect(response).to redirect_to my_queue_path
+      end
     end
   end
 end

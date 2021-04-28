@@ -9,6 +9,7 @@ describe QueueItem do
   describe "validations" do
     it { should validate_uniqueness_of(:position).scoped_to(:user_id) }
     it { should validate_uniqueness_of(:video_id).scoped_to(:user_id) }
+    it { should validate_numericality_of(:position).only_integer }
   end
 
   describe " =>:next_position" do
@@ -98,6 +99,28 @@ describe QueueItem do
       6.times { |n| old_items[n + 1] = Fabricate(:queue_item, position: n + 1, user_id: user.id, video_id: n + 1) }
       positions_hash = { "1" => "1", "2" => "4", "3" => "3", "4" => "4", "5" => "6", "6" => "6"}
       expect { QueueItem.reorder_positions(user, positions_hash) }.to raise_error(StandardError)
+    end
+
+    it "doesn't change any positions if user changes more than 1 position at a time" do
+      user = Fabricate(:user)
+      old_items = {}
+      3.times { |n| old_items[n + 1] = Fabricate(:queue_item, position: n + 1, user_id: user.id, video_id: n + 1) }
+      positions_hash = { "1" => "1", "2" => "3", "3" => "1"}
+      QueueItem.reorder_positions(user, positions_hash) rescue
+      expect(user.queue_items.where(position: 1)).to eq([old_items[1]])
+      expect(user.queue_items.where(position: 2)).to eq([old_items[2]])
+      expect(user.queue_items.where(position: 3)).to eq([old_items[3]])
+    end
+
+    it "doesn't change any positions if user enters something other than an integer" do
+      user = Fabricate(:user)
+      old_items = {}
+      3.times { |n| old_items[n + 1] = Fabricate(:queue_item, position: n + 1, user_id: user.id, video_id: n + 1) }
+      positions_hash = { "1" => "1", "2" => "3.5", "3" => "3"}
+      QueueItem.reorder_positions(user, positions_hash) rescue
+      expect(user.queue_items.where(position: 1)).to eq([old_items[1]])
+      expect(user.queue_items.where(position: 2)).to eq([old_items[2]])
+      expect(user.queue_items.where(position: 3)).to eq([old_items[3]])
     end
   end
 end
