@@ -24,11 +24,12 @@
                   %td
                     = button_to "Play", nil, class: "btn btn-default"
                   %td
-                    - review = item.video.reviews.where(user: current_user).first
-                    - if review.nil?
-                      = select(review, :rating, review_rating_options, { include_blank: true }, { class: 'form-group' })
+                    - if item.review.nil?
+                      = select("review", :rating, review_rating_options, { include_blank: true }, { class: 'form-group', name: 'reviews[]rating', id: '' } )
                     - else
-                      = select(review, :rating, review_rating_options, { selected: review.rating }, { class: 'form-group' })
+                      = select("review", :rating, review_rating_options, { selected: item.review.rating }, { class: 'form-group', name: 'reviews[]rating', id: '' } )
+                    = hidden_field_tag("reviews[][id]", item.review ? item.review.id : nil)
+                    = hidden_field_tag("reviews[][video_id]", item.video_id)
                   %td
                     = link_to "#{item.video.category.name}", show_category_path(item.video.category)
                   %td

@@ -12,7 +12,24 @@ describe QueueItem do
     it { should validate_numericality_of(:position).only_integer }
   end
 
-  describe " =>:next_position" do
+  describe "#review" do
+    it "returns the review for the video and user associated with the queue item it exists" do
+      user = Fabricate(:user)
+      video = Fabricate(:video)
+      queue_item = Fabricate(:queue_item, video_id: video.id, user_id: user.id)
+      review = Fabricate(:review, user_id: user.id, video_id: video.id)
+      expect(queue_item.review).to eq(review)
+    end
+
+    it "returns nil if the review does not exist" do
+      user = Fabricate(:user)
+      video = Fabricate(:video)
+      queue_item = Fabricate(:queue_item, video_id: video.id, user_id: user.id)
+      expect(queue_item.review).to eq(nil)
+    end
+  end
+
+  describe "::next_position" do
     it "should return the largest position for the given user + 1" do
       user = Fabricate(:user)
       3.times { |n| Fabricate(:queue_item, position: n + 1, user_id: user.id, video_id: n) }
@@ -47,14 +64,6 @@ describe QueueItem do
       expect(QueueItem.count).to eq(1)
     end
   end
-
-  #expected behavior:
-    #if a position is changed to a larger number, the positions less than or equal to the new number and 
-    # greater than the old number are reduced by 1 so there is no gap in positions or duplicate positions
-    #if a position is changed to a smaller number, the positions greater or equal to the new number and less
-    # than the old number are increased by 1 so there is no gap in positions or duplicate positions
-    #if multiple changes are made, the changes are made starting with the lowest original position, and
-    # any positions that have already been changed are 'locked' so they will not be changed again
 
   describe "::reorder_positions" do
     it "reorders correctly with 1 change" do

@@ -6,6 +6,10 @@ class QueueItem < ActiveRecord::Base
   validates_uniqueness_of :position, scope: :user_id
   validates_numericality_of :position, only_integer: true
 
+  def review
+    self.user.reviews.where(video_id: self.video_id).first
+  end
+
   def self.next_position(user)
     user.queue_items.count + 1
   end
