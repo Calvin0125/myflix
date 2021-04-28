@@ -25,6 +25,7 @@ class QueueItem < ActiveRecord::Base
 
   def self.reorder_positions(user, positions_hash)
     remove_positions_with_no_change(positions_hash)
+    return if positions_hash.empty?
     raise StandardError.new if user_attempts_multiple_position_changes(positions_hash)
     current_position, new_position = positions_hash.keys[0], positions_hash.values[0]
     new_position = ensure_new_position_is_in_range(new_position, user)
