@@ -51,8 +51,17 @@ describe Review do
       user2 = Fabricate(:user)
       video = Fabricate(:video)
       review = Fabricate(:review, video_id: video.id, user_id: user2.id, rating: 2)
-      Review.update_or_create_reviews(user1, [{id: review.id.to_s, video_id: video.id.to_s, rating: 3}])
+      Review.update_or_create_reviews(user1, [{id: review.id.to_s, video_id: video.id.to_s, rating: '3'}])
       expect(user2.reviews.first.rating).to eq(2)
+    end
+
+    it "does nothing if user tries to update existing review to have no rating" do
+      user = Fabricate(:user)
+      video = Fabricate(:video)
+      review = Fabricate(:review, video_id: video.id, user_id: user.id, rating: 3)
+      reviews_array = [{id: review.id.to_s, video_id: video.id.to_s, rating: ''}]
+      Review.update_or_create_reviews(user, reviews_array)
+      expect(Review.find(review.id).rating).to eq(3)
     end
   end
 end

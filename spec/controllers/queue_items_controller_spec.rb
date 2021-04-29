@@ -117,16 +117,29 @@ describe QueueItemsController do
         session[:user_id] = user.id
         queue_items = []
         3.times { |n| queue_items << Fabricate(:queue_item, position: n + 1, video_id: n + 1, user_id: user.id) }
-        post :update, params: { positions: { "1": "1", "2": "3", "3": "3"} }
+        post :update, params: { positions: { "1": "1", "2": "3", "3": "3"}, reviews: [{id: '', rating: ''}] }
         expect(user.queue_items.where(position: 3).first).to eq(queue_items[1])
       end 
+
+      it "updates and creates reviews based on user input" do
+        user = Fabricate(:user)
+        session[:user_id] = user.id
+        video1 = Fabricate(:video)
+        video2 = Fabricate(:video)
+        review1 = Fabricate(:review, user_id: user.id, video_id: video1.id, rating: 3)
+        reviews_array = [{ id: review1.id.to_s, video_id: video1.id.to_s, rating: '4' },
+                         { id: '', video_id: video2.id.to_s, rating: '5' }]
+        post :update, params: { positions: {}, reviews: reviews_array }
+        expect(user.reviews.where(video: video1).first.rating).to eq(4)
+        expect(user.reviews.where(video: video2).first.rating).to eq(5)
+      end
 
       it "redirects to my_queue" do
         user = Fabricate(:user)
         session[:user_id] = user.id
         queue_items = []
         3.times { |n| queue_items << Fabricate(:queue_item, position: n + 1, video_id: n + 1, user_id: user.id) }
-        post :update, params: { positions: { "1": "3", "2": "3", "3": "3"} }
+        post :update, params: { positions: { "1": "3", "2": "3", "3": "3"}, reviews: [{id: '', rating: ''}] }
         expect(response).to redirect_to my_queue_path
       end
     end
@@ -137,7 +150,7 @@ describe QueueItemsController do
         session[:user_id] = user.id
         queue_items = []
         3.times { |n| queue_items << Fabricate(:queue_item, position: n + 1, video_id: n + 1, user_id: user.id) }
-        post :update, params: { positions: { "1": "3", "2": "3", "3": "3"} }
+        post :update, params: { positions: { "1": "3", "2": "3", "3": "3"}, reviews: [{id: '', rating: ''}] }
         expect(flash[:warning]).to eq("Your queue was not updated, please update one item at a time with an integer.")
       end
 
@@ -146,7 +159,7 @@ describe QueueItemsController do
         session[:user_id] = user.id
         queue_items = []
         3.times { |n| queue_items << Fabricate(:queue_item, position: n + 1, video_id: n + 1, user_id: user.id) }
-        post :update, params: { positions: { "1": "1", "2": "3.5", "3": "3"} }
+        post :update, params: { positions: { "1": "1", "2": "3.5", "3": "3"}, reviews: [{id: '', rating: ''}] }
         expect(flash[:warning]).to eq("Your queue was not updated, please update one item at a time with an integer.")
       end
 
@@ -155,7 +168,7 @@ describe QueueItemsController do
         session[:user_id] = user.id
         queue_items = []
         3.times { |n| queue_items << Fabricate(:queue_item, position: n + 1, video_id: n + 1, user_id: user.id) }
-        post :update, params: { positions: { "1": "3", "2": "3", "3": "3"} }
+        post :update, params: { positions: { "1": "3", "2": "3", "3": "3"}, reviews: [{id: '', rating: ''}] }
         expect(response).to redirect_to my_queue_path
       end
     end

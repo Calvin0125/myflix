@@ -25,9 +25,9 @@
                     = button_to "Play", nil, class: "btn btn-default"
                   %td
                     - if item.review.nil?
-                      = select("review", :rating, review_rating_options, { include_blank: true }, { class: 'form-group', name: 'reviews[]rating', id: '' } )
+                      = select("review", :rating, review_rating_options, { include_blank: true }, { class: 'form-group', name: 'reviews[]rating' } )
                     - else
-                      = select("review", :rating, review_rating_options, { selected: item.review.rating }, { class: 'form-group', name: 'reviews[]rating', id: '' } )
+                      = select("review", :rating, review_rating_options, { selected: item.review.rating }, { class: 'form-group', name: 'reviews[]rating' } )
                     = hidden_field_tag("reviews[][id]", item.review ? item.review.id : nil)
                     = hidden_field_tag("reviews[][video_id]", item.video_id)
                   %td

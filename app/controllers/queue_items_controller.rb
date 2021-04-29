@@ -16,6 +16,7 @@ class QueueItemsController < ApplicationController
   end
 
   def update
+    Review.update_or_create_reviews(helpers.current_user, params[:reviews])
     begin
       QueueItem.reorder_positions(helpers.current_user, params[:positions])
     rescue StandardError
