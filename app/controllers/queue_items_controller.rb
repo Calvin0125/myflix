@@ -16,7 +16,12 @@ class QueueItemsController < ApplicationController
   end
 
   def update
-    Review.update_or_create_reviews(helpers.current_user, params[:reviews])
+    begin
+      Review.update_or_create_reviews(helpers.current_user, params[:reviews])
+    rescue
+      flash[:warning] = "An error occured and your reviews were not updated."
+    end
+    
     begin
       QueueItem.reorder_positions(helpers.current_user, params[:positions])
     rescue StandardError
