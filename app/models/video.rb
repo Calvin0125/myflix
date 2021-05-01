@@ -15,4 +15,8 @@ class Video < ActiveRecord::Base
     average = rating_sum.to_f / self.reviews.count.to_f
     sprintf('%.1f', average.round(1))
   end
+
+  def already_in_queue(user)
+    user.queue_items.where(video_id: self.id).length == 1
+  end
 end
