@@ -11,9 +11,22 @@ feature "My Queue" do
     click_button 'Sign in'
   end
 
-  scenario "user adds video to my queue" do
-    click_link "video#{@star_wars.id}"
+  def add_video_to_queue(video)
+    visit '/home'
+    click_link "video#{video.id}"
     click_link "+ My Queue"
+  end
+
+  def assert_position(position, video)
+    page.find("tr:nth-child(#{position}) td a[href^='/videos']").assert_text(:visible, video.title)
+  end
+
+  def update_position(old_position, new_position)
+    fill_in "positions[#{old_position}]", with: "#{new_position}"
+  end
+
+  scenario "user adds video to my queue" do
+    add_video_to_queue(@star_wars)
     visit '/my_queue'
     expect(page).to have_content "Star Wars"
     click_link "Star Wars"
@@ -22,21 +35,14 @@ feature "My Queue" do
   end
 
   scenario "user reorders videos in queue" do
-    click_link "video#{@star_wars.id}"
-    click_link "+ My Queue"
-    visit '/home'
-    
-    click_link "video#{@star_trek.id}"
-    click_link "+ My Queue"
-    visit '/home'
-
-    click_link "video#{@interstellar.id}"
-    click_link "+ My Queue"
+    add_video_to_queue(@star_wars)
+    add_video_to_queue(@star_trek)
+    add_video_to_queue(@interstellar)
 
     click_link "My Queue"
-    page.find('tr:nth-child(3) td a[href^="/videos"]').assert_text(:visible, "Interstellar")
-    fill_in 'positions[3]', with: '1'
+    assert_position(3, @interstellar)
+    update_position(3, 1)
     click_button "+ Update Instant Queue"
-    page.find('tr:first-child td a[href^="/videos"]').assert_text(:visible, "Interstellar")
+    assert_position(1, @interstellar)
   end
 end
