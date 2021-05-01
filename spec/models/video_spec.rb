@@ -80,19 +80,19 @@ describe Video do
     end
   end
 
-  describe "#already in queue" do
+  describe "#already_in_queue?" do
     before(:each) do
       @user = Fabricate(:user)
       @video = Fabricate(:video)
     end
-    
+
     it "returns true if the video is already in the user's queue" do
       Fabricate(:queue_item, position: 1, user_id: @user.id, video_id: @video.id)
-      expect(@video.already_in_queue(@user)).to eq(true)
+      expect(@video.already_in_queue?(@user)).to eq(true)
     end
 
     it "returns false if the video is not in the user's queue" do
-      expect(@video.already_in_queue(@user)).to eq(false)
+      expect(@video.already_in_queue?(@user)).to eq(false)
     end
   end
 end

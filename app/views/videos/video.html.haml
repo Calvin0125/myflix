@@ -11,7 +11,8 @@
         .actions
           %a.btn.btn-primary(href="") Watch Now
           - params = queue_item_params(current_user, @video)
-          = link_to("+ My Queue", queue_items_path(params), method: :post, class: "btn btn-default")
+          - unless @video.already_in_queue?(current_user)
+            = link_to("+ My Queue", queue_items_path(params), method: :post, class: "btn btn-default")
 %section.reviews.container
   .row
     .col-sm-10.col-sm-offset-1
