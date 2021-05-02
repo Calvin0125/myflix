@@ -6,6 +6,9 @@ Rails.application.routes.draw do
   post 'register', to: 'users#create'
   get 'user/:id', to: 'users#show', as: 'user'
 
+  get 'people', to: 'relationships#index', as: 'people'
+  delete 'relationship/:id', to: 'relationships#destroy', as: 'destroy_relationship'
+
   get 'login', to: 'sessions#new'
   post 'login', to: 'sessions#create'
   post 'logout', to: 'sessions#destroy'

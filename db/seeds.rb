@@ -46,6 +46,13 @@ calvin = User.create(full_name: "Calvin Conley", email: "calvin@conley.com", pas
 daffy = User.create(full_name: "Daffy Duck", email: "daffy@duck.com", password: "password", profile_pic_src: "https://via.placeholder.com/40x40.png?text=DD")
 kirby = User.create(full_name: "Kirby", email: "kirby@nintendo.com", password: "password", profile_pic_src: "https://via.placeholder.com/40x40.png?text=KN")
 
+Relationship.create(follower_id: calvin.id, leader_id: daffy.id)
+Relationship.create(follower_id: calvin.id, leader_id: kirby.id)
+Relationship.create(follower_id: daffy.id, leader_id: calvin.id)
+Relationship.create(follower_id: daffy.id, leader_id: kirby.id)
+Relationship.create(follower_id: kirby.id, leader_id: daffy.id)
+Relationship.create(follower_id: kirby.id, leader_id: calvin.id)
+
 sci_fi_videos.each do |video|
   calvin_review = Review.create(rating: review_rating, body: review_body)
   video.reviews << calvin_review
