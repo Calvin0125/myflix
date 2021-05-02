@@ -4,6 +4,8 @@ Rails.application.routes.draw do
 
   get 'register', to: 'users#new'
   post 'register', to: 'users#create'
+  get 'user/:id', to: 'users#show', as: 'user'
+
   get 'login', to: 'sessions#new'
   post 'login', to: 'sessions#create'
   post 'logout', to: 'sessions#destroy'
@@ -13,7 +15,7 @@ Rails.application.routes.draw do
   put 'queue_items', to: 'queue_items#update', as: 'queue_items_update'
   delete 'queue_items/:id', to: 'queue_items#destroy', as: 'queue_items_destroy'
 
-  get 'category/:id', to: 'categories#show', as: 'show_category'
+  get 'category/:id', to: 'categories#show', as: 'category'
 
   resources :videos, only: [:show] do
     collection do

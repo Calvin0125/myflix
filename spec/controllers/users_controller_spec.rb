@@ -38,4 +38,33 @@ describe UsersController do
       end
     end
   end
+
+  describe "GET user/:id" do
+    before(:each) { @bob = Fabricate(:user) }
+
+    context "logged in user" do
+      before(:each) { login }
+
+      it "sets @user based on params id" do
+        get :show, params: { id: @bob.id }
+        expect(assigns(:user)).to eq(@bob)
+      end
+
+      it "renders the show user template" do
+        get :show, params: { id: @bob.id }
+        expect(response).to render_template :show
+      end
+    end
+
+    context "no user logged in" do
+      it_behaves_like "a page for logged in users only" do
+        let(:action) { get :show, params: { id: @bob.id } }
+      end
+
+      it "sets the flash notice" do
+        get :show, params: { id: @bob.id }
+        expect(flash[:danger]).to eq("You must be logged in to do that.")
+      end
+    end
+  end
 end

@@ -1,6 +1,6 @@
 %header
   - @categories.each do |category|
     %article.video_category
-      %h3= link_to "#{category.name}", show_category_path(category)
+      %h3= link_to "#{category.name}", category_path(category)
     .videos.row
       = render 'shared/videos', videos: category.recent_videos

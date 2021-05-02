@@ -31,7 +31,7 @@
                     = hidden_field_tag("reviews[][id]", item.review ? item.review.id : nil)
                     = hidden_field_tag("reviews[][video_id]", item.video_id)
                   %td
-                    = link_to "#{item.video.category.name}", show_category_path(item.video.category)
+                    = link_to "#{item.video.category.name}", category_path(item.video.category)
                   %td
                     = link_to "x", queue_items_destroy_path(item.id), method: :delete, class: "remove"
           = submit_tag("+ Update Instant Queue", class: "btn btn-default")

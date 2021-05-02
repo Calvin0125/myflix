@@ -1,4 +1,6 @@
 class UsersController < ApplicationController
+  before_action :require_login, only: :show
+
   def new
     @user = User.new
     render :register
@@ -12,6 +14,10 @@ class UsersController < ApplicationController
     else
       render :register
     end
+  end
+
+  def show
+    @user = User.find(params[:id])
   end
 
   private

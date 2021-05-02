@@ -42,9 +42,9 @@ scooby_doo = Video.create(title: "Scooby Doo", description: "Mystery solving dog
 cartoon_videos = [futurama, rick_and_morty, scooby_doo]
 cartoons.videos << cartoon_videos
 
-calvin = User.create(full_name: "Calvin Conley", email: "calvin@conley.com", password: "password")
-daffy = User.create(full_name: "Daffy Duck", email: "daffy@duck.com", password: "password")
-kirby = User.create(full_name: "Kirby", email: "kirby@nintendo.com", password: "password")
+calvin = User.create(full_name: "Calvin Conley", email: "calvin@conley.com", password: "password", profile_pic_src: "https://via.placeholder.com/40x40.png?text=CC")
+daffy = User.create(full_name: "Daffy Duck", email: "daffy@duck.com", password: "password", profile_pic_src: "https://via.placeholder.com/40x40.png?text=DD")
+kirby = User.create(full_name: "Kirby", email: "kirby@nintendo.com", password: "password", profile_pic_src: "https://via.placeholder.com/40x40.png?text=KN")
 
 sci_fi_videos.each do |video|
   calvin_review = Review.create(rating: review_rating, body: review_body)
