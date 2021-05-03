@@ -8,6 +8,8 @@ describe User do
   describe "associations" do
     it { should have_many(:reviews) }
     it { should have_many(:queue_items) }
+    it { should have_many(:following_relationships).class_name('Relationship').with_foreign_key('follower_id') }
+    it { should have_many(:leading_relationships).class_name('Relationship').with_foreign_key('leader_id') }
   end
 
   describe "validations" do
