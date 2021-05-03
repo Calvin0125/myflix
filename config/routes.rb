@@ -8,6 +8,7 @@ Rails.application.routes.draw do
 
   get 'people', to: 'relationships#index', as: 'people'
   delete 'relationship/:id', to: 'relationships#destroy', as: 'destroy_relationship'
+  post 'relationship', to: 'relationships#create', as: 'create_relationship'
 
   get 'login', to: 'sessions#new'
   post 'login', to: 'sessions#create'

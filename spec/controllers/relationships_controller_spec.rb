@@ -38,6 +38,58 @@ describe RelationshipsController do
     end
   end
 
+  describe "POST create" do
+    context "logged in user" do
+      before(:each) do
+        @leading_user = Fabricate(:user)
+        login
+      end
+
+      context "valid input" do
+        it "creates a following relationship for the current user with the user being viewed" do
+          post :create, params: { leader_id: @leading_user.id }
+          expect(current_user.following_relationships.count).to eq(1)
+          expect(current_user.following_relationships.first.leader).to eq(@leading_user)
+        end
+
+        it "sets the flash message" do
+          post :create, params: { leader_id: @leading_user.id }
+          expect(flash[:success]).to eq("You are following #{@leading_user.full_name}")
+        end
+
+        it "redirects to the leading user's profile page" do
+          post :create, params: { leader_id: @leading_user.id }
+          expect(response).to redirect_to user_path(@leading_user.id)
+        end
+      end
+
+      context "invalid input" do
+        it "doesn't create the relationship" do
+          post :create, params: { leader_id: current_user.id }
+          expect(current_user.following_relationships.count).to eq(0)
+        end
+
+        it "sets the flash message" do
+          Fabricate(:relationship, follower: current_user, leader: @leading_user)
+          post :create, params: { leader_id: @leading_user.id }
+          expect(flash[:danger]).to eq("Your request to follow #{@leading_user.full_name} could not be completed.")
+        end
+
+        it "redirects to the leading user's profile page" do
+          Fabricate(:relationship, follower: current_user, leader: @leading_user)
+          post :create, params: { leader_id: @leading_user.id }
+          expect(response).to redirect_to user_path(@leading_user.id)
+        end
+      end
+    end
+
+    context "no user logged in" do
+      it_behaves_like "a page for logged in users only" do
+        let(:action) { post :create }
+      end
+    end
+  end
+
   describe "DELETE destroy" do
     context "logged in user" do
       before(:each) do

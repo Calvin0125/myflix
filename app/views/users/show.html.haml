@@ -5,7 +5,12 @@
         %header
           %img(src="#{@user.profile_pic_src}")
           %h2 #{@user.full_name}'s video collections (#{@user.queue_items.count})
-          %button.btn.btn-default Follow
+          - if current_user != @user
+            - if current_user.already_following?(@user)
+              - relationship = Relationship.where(follower: current_user, leader: @user).first
+              = link_to "Unfollow", destroy_relationship_path(relationship.id), method: :delete, class: 'btn btn-primary float-right'
+            - else
+              = link_to "Follow", create_relationship_path(leader_id: @user.id), method: :post, class: 'btn btn-primary float-right'
         %table.table
           %thead
             %tr
