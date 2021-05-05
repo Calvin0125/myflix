@@ -117,4 +117,13 @@ Rails.application.configure do
   # config.active_record.database_selector = { delay: 2.seconds }
   # config.active_record.database_resolver = ActiveRecord::Middleware::DatabaseSelector::Resolver
   # config.active_record.database_resolver_context = ActiveRecord::Middleware::DatabaseSelector::Resolver::Session
+
+  # configure email settings
+  config.action_mailer.logger = nil
+  config.action_mailer.delivery_method = :letter_opener
+  config.action_mailer.perform_deliveries = true
+  config.smtp_settings = { address: 'smtp.gmail.com',
+                           port: 587
+                           user_name: ENV['MAIL_USERNAME'],
+                           password: ENV['MAIL_PASSWORD'] }
 end
