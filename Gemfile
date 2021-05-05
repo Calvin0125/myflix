@@ -73,6 +73,7 @@ end
 
 group :production do
   gem 'rails_12factor'
+  gem 'rack-mini-profiler', '~> 2.0'
 end
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
