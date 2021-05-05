@@ -120,7 +120,6 @@ Rails.application.configure do
 
   # configure email settings
   config.action_mailer.logger = nil
-  config.action_mailer.delivery_method = :letter_opener
   config.action_mailer.perform_deliveries = true
   config.smtp_settings = { address: 'smtp.gmail.com',
                            port: 587,
