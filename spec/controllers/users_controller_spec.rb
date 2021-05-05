@@ -29,12 +29,36 @@ describe UsersController do
         post :create, params: { user: Fabricate.attributes_for(:user) }
         expect(response).to redirect_to(login_path)
       end
+
+      context "email sending" do
+        it "sends the email" do
+          post :create, params: { user: Fabricate.attributes_for(:user) }
+          ActionMailer::Base.deliveries.should_not be_empty
+        end
+
+        it "sends the email to the right person" do
+          post :create, params: { user: Fabricate.attributes_for(:user) }
+          message = ActionMailer::Base.deliveries.last
+          expect(message.to).to eq([User.first.email])
+        end
+
+        it "includes the right content" do
+          post :create, params: { user: Fabricate.attributes_for(:user) }
+          message = ActionMailer::Base.deliveries.last
+          expect(message.body).to include("welcome to MyFlix")
+        end
+      end
     end
 
     context "invalid input" do
       it "renders register template" do
         post :create, params: { user: Fabricate.attributes_for(:user, full_name: '', email: '', password: '') }
         expect(response).to render_template(:register)
+      end
+
+      it "doesn't send the email" do
+        post :create, params: { user: Fabricate.attributes_for(:user, full_name: '', email: '', password: '') }
+        ActionMailer::Base.deliveries.should be_empty
       end
     end
   end
