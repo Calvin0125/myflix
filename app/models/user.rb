@@ -12,4 +12,18 @@ class User < ActiveRecord::Base
   def already_following?(user)
     Relationship.where(follower: self, leader: user).count > 0
   end
+
+  def set_token
+    self.token = SecureRandom.urlsafe_base64
+    save
+  end
+
+  def remove_token
+    self.token = nil
+    save
+  end
+
+  def to_param
+    self.token ? self.token : self.id.to_s
+  end
 end

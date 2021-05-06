@@ -18,4 +18,21 @@ describe User do
     it { should validate_presence_of :password }
     it { should validate_uniqueness_of :email }
   end
+
+  describe "#set_token" do
+    it "should set a random token for the user" do
+      user = Fabricate(:user)
+      user.set_token
+      expect(User.first.token).not_to be_blank
+    end
+  end
+
+  describe "#remove_token" do
+    it "should remove the token for the user" do
+      user = Fabricate(:user)
+      user.set_token
+      user.remove_token
+      expect(User.first.token).to be_blank
+    end
+  end
 end

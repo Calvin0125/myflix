@@ -1,10 +1,15 @@
 Rails.application.routes.draw do
   root to: 'pages#front'
-  get 'home', to: 'videos#index'
+  get 'home', to: 'videos#index', as: 'home'
 
   get 'register', to: 'users#new'
   post 'register', to: 'users#create'
   get 'user/:id', to: 'users#show', as: 'user'
+  get 'forgot_password', to: 'users#forgot_password', as: 'forgot_password'
+  post 'forgot_password', to: 'users#forgot_password'
+  get 'reset_password_confirmation', to: 'users#reset_password_confirmation', as: 'reset_password_confirmation'
+  get 'reset_password/:token', to: 'users#reset_password', as: 'reset_password'
+  post 'reset_password', to: 'users#reset_password'
 
   get 'people', to: 'relationships#index', as: 'people'
   delete 'relationship/:id', to: 'relationships#destroy', as: 'destroy_relationship'

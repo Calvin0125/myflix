@@ -91,4 +91,165 @@ describe UsersController do
       end
     end
   end
+
+  describe "GET forgot_password" do
+    context "user logged in" do
+      before(:each) { login }
+      it "redirects to home" do
+        get :forgot_password
+        expect(response).to redirect_to home_path
+      end
+
+      it "sets the flash message" do
+        get :forgot_password
+        expect(flash[:warning]).to eq("You are already logged in.")
+      end
+    end
+
+    context "no user logged in" do
+      it "renders forgot_password template" do
+        get :forgot_password
+        expect(response).to render_template :forgot_password
+      end
+    end
+  end
+
+  describe "POST forgot_password" do
+    context "user logged in" do
+      before(:each) { login }
+      it "redirects to home" do
+        post :forgot_password
+        expect(response).to redirect_to home_path
+      end
+
+      it "sets the flash warning" do
+        post :forgot_password
+        expect(flash[:warning]).to eq("You are already logged in.")
+      end
+    end
+
+    context "no user logged in" do
+      context "valid email" do
+        before(:each) do
+          @user = Fabricate(:user)
+          post :forgot_password, params: { email: @user.email }
+        end
+        
+        it "sets the user based on email in params" do
+          expect(assigns(:user)).to eq(@user)
+        end
+
+        it "sends the email" do
+          ActionMailer::Base.deliveries.should_not be_empty
+        end
+
+        it "sets a random token on the user requesting a password reset" do
+          expect(User.first.token).not_to be_empty
+        end
+
+        it "the email contains a link to reset_password/:token" do
+          message = ActionMailer::Base.deliveries.last
+          expect(message.body).to include("<a href=\"/reset_password/#{User.first.token}\"")
+        end
+
+        it "redirects to the confirm password reset path" do
+          expect(response).to redirect_to reset_password_confirmation_path
+        end
+      end
+
+      context "invalid email" do
+        before(:each) { post :forgot_password, params: { email: Faker::Internet.email } }
+
+        it "redirects to forgot_password" do
+          expect(response).to redirect_to forgot_password_path
+        end
+
+        it "sets the flash warning" do
+          expect(flash[:warning]).to eq("No user matches the email address you entered.")
+        end
+      end
+    end
+  end
+
+  describe "GET reset_password_confirmation" do
+    context "no user logged in" do
+      it "renders reset_password_confirmation template" do
+        get :reset_password_confirmation
+        expect(response).to render_template :reset_password_confirmation
+      end
+    end
+
+    context "user logged in" do
+      before(:each) do
+        login
+        get :reset_password_confirmation
+      end
+
+      it "redirects to home" do
+        expect(response).to redirect_to home_path
+      end
+
+      it "sets the warning" do
+        expect(flash[:warning]).to eq("You are already logged in.")
+      end
+    end
+  end
+
+  describe "GET reset_password/:token" do
+    context "no user matches token" do
+      it "redirects to root if no user matches token" do
+        get :reset_password, params: { token: SecureRandom.urlsafe_base64 }
+        expect(response).to redirect_to root_path
+      end
+    end
+
+    context "user matches token" do
+      before(:each) do
+        token = SecureRandom.urlsafe_base64
+        @user = Fabricate(:user, token: token)
+        get :reset_password, params: { token: @user.token }
+      end
+
+      it "sets the user" do
+        expect(assigns(:user)).to eq(@user)
+      end
+
+      it "renders the reset password template" do
+        expect(response).to render_template(:reset_password)
+      end
+    end
+  end
+
+  describe "POST reset_password" do
+    context "no user matches token" do
+      it "redirects to root path" do
+        token = SecureRandom.urlsafe_base64
+        post :reset_password, params: { user: { password: 'new_password', token: token } }
+        expect(response).to redirect_to root_path
+      end
+    end
+
+    context "user matches token" do
+      before(:each) do
+        @user = Fabricate(:user, token: SecureRandom.urlsafe_base64, password: 'old_password')
+        post :reset_password, params: { user: { password: 'new_password', token: @user.token } }
+      end
+
+      it "resets the password" do
+        expect(@user.reload.authenticate('new_password')).to eq(@user.reload)
+      end
+
+      it "removes the token from user" do
+        expect(@user.reload.token).to eq(nil)
+      end
+
+      it "sets the flash message" do
+        expect(flash[:success]).to eq("Your password has been reset, please log in.")
+      end
+
+      it "redirects to login page" do
+        expect(response).to redirect_to login_path
+      end
+    end
+  end
 end

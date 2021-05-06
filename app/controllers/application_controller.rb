@@ -5,4 +5,11 @@ class ApplicationController < ActionController::Base
       redirect_to root_path
     end
   end
+
+  def require_not_logged_in
+    if helpers.logged_in?
+      flash[:warning] = "You are already logged in."
+      redirect_to home_path
+    end
+  end
 end
