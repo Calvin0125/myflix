@@ -29,7 +29,7 @@ class UsersController < ApplicationController
       @user = User.where(email: params[:email]).first
       if @user
         @user.set_token
-        @url = reset_password_path(@user)
+        @url = reset_password_url(@user)
         UserMailer.reset_password_email(@user, @url).deliver
         redirect_to reset_password_confirmation_path
       else

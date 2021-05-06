@@ -149,7 +149,7 @@ describe UsersController do
 
         it "the email contains a link to reset_password/:token" do
           message = ActionMailer::Base.deliveries.last
-          expect(message.body).to include("<a href=\"/reset_password/#{User.first.token}\"")
+          expect(message.body).to include("/reset_password/#{User.first.token}")
         end
 
         it "redirects to the confirm password reset path" do
