@@ -8,11 +8,11 @@ feature "reset_password" do
     click_on "Forgot password"
     fill_in "Email", with: @user.email
     click_on "Send Email"
-    token = @user.reload.token
-    visit "/reset_password/#{token}"
+    open_email @user.email
+    current_email.click_link 'Reset Password'
     fill_in "Password", with: 'newpassword'
     click_on "Reset Password"
-    visit "/reset_password/#{token}"
+    current_email.click_link 'Reset Password'
     expect(page).not_to have_content "Reset Password"
     visit '/login'
     fill_in "Email", with: @user.email

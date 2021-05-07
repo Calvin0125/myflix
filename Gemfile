@@ -35,6 +35,7 @@ gem 'jquery-rails'
 gem 'pg'
 gem 'fabrication'
 gem 'faker', :git => 'https://github.com/faker-ruby/faker.git', :branch => 'master'
+gem 'capybara-email'
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
