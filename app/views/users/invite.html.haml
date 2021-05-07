@@ -1,0 +1,24 @@
+%section.invite.container
+  .row
+    .col-sm-10.col-sm-offset-1
+      %form.invite
+        %header
+          %h1 Invite a friend to join MyFlix!
+        %fieldset
+          .form-group
+            %label(for="name") Friend's Name
+            .row
+              .col-sm-4
+                %input.form-control(type="text" id="name" name="name")
+          .form-group
+            %label(for="email") Friend's Email Address
+            .row
+              .col-sm-4
+                %input.form-control(type="email" id="email" name="email")
+          .form-group
+            %label(for="message") Invitation Message
+            .row
+              .col-sm-6
+                %textarea.form-control(rows=6 id="message" name="message") Please join this really cool site!
+        %fieldset.form-group.action
+          %input(type="submit" value="Send Invitation" class="btn btn-default")

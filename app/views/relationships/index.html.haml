@@ -18,3 +18,4 @@
           %td.extra-padding #{relationship.leader.leading_relationships.count}
           %td.extra-padding
             = link_to "x", destroy_relationship_path(id: relationship.id), method: :delete
+  = link_to "Invite a friend", invite_path

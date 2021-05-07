@@ -252,4 +252,71 @@ describe UsersController do
       end
     end
   end
+
+  describe "GET invite" do
+    context "logged in user" do
+      it "renders the invite template" do
+        login
+        get :invite
+        expect(response).to render_template :invite
+      end
+    end
+
+    context "no user logged in" do
+      it_behaves_like "a page for logged in users only" do
+        let(:action) { get :invite }
+      end
+    end
+  end
+
+  describe "POST invite" do
+    context "logged in user" do
+      context "valid input" do
+        before(:each) do 
+          login
+          post :invite, params: { email: "calvin@conley.com", name: "Calvin Conley", message: "Please join MyFlix!" }
+        end
+
+        it "sends the email to specified address" do
+          message = ActionMailer::Base.deliveries.last
+          expect(message.to).to eq(["calvin@conley.com"])
+        end
+
+        it "sends the email with the right content" do
+          message = ActionMailer::Base.deliveries.last
+          expect(message.body).to include("Calvin Conley")
+          expect(message.body).to include("#{current_user.full_name}")
+          expect(message.body).to include("Please join MyFlix")
+        end
+
+        it "sets the flash message" do
+          expect(flash[:success]).to eq("You have invited Calvin Conley to join MyFlix!")
+        end
+
+        it "redirects to people page" do
+          expect(response).to redirect_to people_path
+        end
+      end
+
+      context "invalid input" do
+        before(:each) do
+          Fabricate(:user, email: "calvin@conley.com")
+          login
+          post :invite, params: { email: "calvin@conley.com", name: "Calvin Conley", message: "Please join MyFlix!" }
+        end
+
+        it "doesn't send the email" do
+          expect(ActionMailer::Base.deliveries).to be_empty
+        end
+
+        it "redirects to people page" do
+          expect(response).to redirect_to people_path
+        end
+
+        it "sets the flash message" do
+          expect(flash[:warning]).to eq("This user has already joined MyFlix.")
+        end
+      end
+    end
+  end
 end

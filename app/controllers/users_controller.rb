@@ -1,5 +1,5 @@
 class UsersController < ApplicationController
-  before_action :require_login, only: :show
+  before_action :require_login, only: [:show, :invite]
   before_action :require_not_logged_in, only: [:forgot_password, :new, :reset_password_confirmation]
 
   def new
@@ -61,6 +61,24 @@ class UsersController < ApplicationController
       else
         redirect_to root_path
       end
+    end
+  end
+
+  def invite
+    if request.get?
+      render :invite
+    elsif request.post?
+      email = params[:email]
+      if User.email_already_taken?(email)
+        flash[:warning] = "This user has already joined MyFlix."
+      else
+        name = params[:name]
+        message = params[:message]
+        url = people_url(email: email, invited_by: helpers.current_user.id)
+        UserMailer.invite_email(email, name, helpers.current_user, url, message).deliver
+        flash[:success] = "You have invited #{name} to join MyFlix!"
+      end
+      redirect_to people_path
     end
   end
 

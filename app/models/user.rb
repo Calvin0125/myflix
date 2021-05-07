@@ -13,6 +13,10 @@ class User < ActiveRecord::Base
     Relationship.where(follower: self, leader: user).count > 0
   end
 
+  def self.email_already_taken?(email)
+    User.where(email: email).count > 0
+  end
+
   def set_token
     self.token = SecureRandom.urlsafe_base64
     save
