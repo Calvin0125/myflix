@@ -75,8 +75,8 @@ Rails.application.configure do
   config.action_mailer.logger = nil
   config.action_mailer.delivery_method = :letter_opener
   config.action_mailer.perform_deliveries = true
-  config.action_mailer.smtp_settings = { address: 'smtp.gmail.com',
-                                         domain: 'gmail.com',
+  config.action_mailer.smtp_settings = { address: 'smtp.mailgun.org',
+                                         domain: 'sandboxf3e0a651ffe0481f91f0c371059c250a.mailgun.org',
                                          port: 587,
                                          user_name: ENV['MAIL_USERNAME'],
                                          password: ENV['MAIL_PASSWORD'],

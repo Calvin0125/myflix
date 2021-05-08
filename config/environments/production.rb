@@ -122,11 +122,11 @@ Rails.application.configure do
   config.action_mailer.logger = nil
   config.action_mailer.perform_deliveries = true
   config.action_mailer.delivery_method = :smtp
-  config.action_mailer.smtp_settings = { address: 'smtp.gmail.com',
-                                         domain: 'gmail.com',
-                                         port: 587,
-                                         user_name: ENV['MAIL_USERNAME'],
-                                         password: ENV['MAIL_PASSWORD'],
+  config.action_mailer.smtp_settings = { address: ENV['MAILGUN_SMTP_SERVER'],
+                                         domain: 'calvin-myflix.heroku.com',
+                                         port: ENV['MAILGUN_SMTP_PORT'],
+                                         user_name: ENV['MAILGUN_SMTP_LOGIN'],
+                                         password: ENV['MAILGUN_SMTP_PASSWORD'],
                                          authentication: 'plain',
                                          enable_starttls_auto: true }
   config.action_mailer.default_url_options = { host: 'calvin-myflix.herokuapp.com' }

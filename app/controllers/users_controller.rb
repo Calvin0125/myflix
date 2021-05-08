@@ -11,7 +11,7 @@ class UsersController < ApplicationController
   def create
     @user = User.new(user_params)
     if @user.save
-      if params[:invited_by]
+      if params[:invited_by].present?
         inviting_user = User.find(params[:invited_by])
         Relationship.create_leading_and_following_relationship(@user, inviting_user)
       end
