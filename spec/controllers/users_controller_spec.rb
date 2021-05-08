@@ -7,6 +7,11 @@ describe UsersController do
       expect(assigns(:user)).to be_instance_of(User)
     end
 
+    it "sets @invited_by" do
+      get :new, params: { invited_by: "3" }
+      expect(assigns(:invited_by)).to eq("3")
+    end
+
     it "renders register template" do
       get :new
       expect(response).to render_template(:register)
@@ -28,6 +33,13 @@ describe UsersController do
       it "redirects to login" do
         post :create, params: { user: Fabricate.attributes_for(:user) }
         expect(response).to redirect_to(login_path)
+      end
+
+      it "creates relationships if invited_by is set in params" do
+        @inviting_user = Fabricate(:user)
+        post :create, params: { user: Fabricate.attributes_for(:user), invited_by: @inviting_user.id }
+        expect(@inviting_user.following_relationships.count).to eq(1)
+        expect(@inviting_user.leading_relationships.count).to eq(1)
       end
 
       context "email sending" do
@@ -309,8 +321,8 @@ describe UsersController do
           expect(ActionMailer::Base.deliveries).to be_empty
         end
 
-        it "redirects to people page" do
-          expect(response).to redirect_to people_path
+        it "redirects to invite page" do
+          expect(response).to redirect_to invite_path
         end
 
         it "sets the flash message" do

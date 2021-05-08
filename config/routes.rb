@@ -11,6 +11,7 @@ Rails.application.routes.draw do
   get 'reset_password/:token', to: 'users#reset_password', as: 'reset_password'
   post 'reset_password', to: 'users#reset_password'
   get 'invite', to: 'users#invite', as: 'invite'
+  post 'invite', to: 'users#invite'
 
   get 'people', to: 'relationships#index', as: 'people'
   delete 'relationship/:id', to: 'relationships#destroy', as: 'destroy_relationship'

@@ -3,13 +3,18 @@ class UsersController < ApplicationController
   before_action :require_not_logged_in, only: [:forgot_password, :new, :reset_password_confirmation]
 
   def new
-    @user = User.new
+    @user = User.new(email: params[:email])
+    @invited_by = params[:invited_by]
     render :register
   end
 
   def create
     @user = User.new(user_params)
     if @user.save
+      if params[:invited_by]
+        inviting_user = User.find(params[:invited_by])
+        Relationship.create_leading_and_following_relationship(@user, inviting_user)
+      end
       UserMailer.welcome_email(@user).deliver
       flash[:success] = "Your account has been created, please log in."
       redirect_to login_path
@@ -71,14 +76,15 @@ class UsersController < ApplicationController
       email = params[:email]
       if User.email_already_taken?(email)
         flash[:warning] = "This user has already joined MyFlix."
+        redirect_to invite_path
       else
         name = params[:name]
         message = params[:message]
-        url = people_url(email: email, invited_by: helpers.current_user.id)
+        url = register_url(email: email, invited_by: helpers.current_user.id)
         UserMailer.invite_email(email, name, helpers.current_user, url, message).deliver
         flash[:success] = "You have invited #{name} to join MyFlix!"
+        redirect_to people_path
       end
-      redirect_to people_path
     end
   end
 

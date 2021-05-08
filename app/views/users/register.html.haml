@@ -7,6 +7,7 @@
       = render 'shared/form_errors', resource: @user
       %fieldset
         .form-group
+          %input(type="hidden" name="invited_by" value="#{@invited_by}")
           = f.label :email, "Email Address", class: "control-label col-sm-2"
           .col-sm-6
             = f.text_field :email, class: "form-control", type: "email"

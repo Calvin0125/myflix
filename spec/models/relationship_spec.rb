@@ -17,4 +17,25 @@ describe Relationship do
       expect(relationship.errors.full_messages).to eq(["Leader and follower cannot be the same user."])
     end
   end
+
+  describe "::create_leading_and_following_relationship" do
+    context "valid input" do
+      it "creates the relationship" do
+        user1 = Fabricate(:user)
+        user2 = Fabricate(:user)
+        Relationship.create_leading_and_following_relationship(user1, user2)
+        expect(user1.following_relationships.count).to eq(1)
+        expect(user2.following_relationships.count).to eq(1)
+      end
+    end
+
+    context "invalid input" do
+      it "doesn't create a relationship" do
+        user1 = Fabricate(:user)
+        user2 = Fabricate(:user)
+        Relationship.create_leading_and_following_relationship(user1, user1)
+        expect(user1.following_relationships.count).to eq(0)
+      end
+    end
+  end
 end

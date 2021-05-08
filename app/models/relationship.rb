@@ -8,6 +8,11 @@ class Relationship < ActiveRecord::Base
 
   private
 
+  def self.create_leading_and_following_relationship(user1, user2)
+    self.create(leader: user1, follower: user2)
+    self.create(leader: user2, follower: user1)
+  end
+
   def leader_not_equal_to_follower
     if self.leader_id == self.follower_id
       @errors.add(:base, "Leader and follower cannot be the same user.")
